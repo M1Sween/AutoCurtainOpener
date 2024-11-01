@@ -4,7 +4,7 @@
 // Function to determine the next state based on current state and conditions
 STATE getNextState(STATE current_state){
   STATE next_state;
-  
+  /*
   // *** STATE TRANSITIONS *** 
   switch (current_state) {
     case IDLE:
@@ -56,5 +56,7 @@ STATE getNextState(STATE current_state){
     break;
 
   }
-  return next_state
+  */
+  next_state = IDLE;
+  return next_state;
 }

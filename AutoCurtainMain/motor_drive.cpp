@@ -1,16 +1,17 @@
 // motor_drive.cpp
 
 #include "motor_drive.h"
-#include <Servo.h>
 
-// write this function in setup of main
-void drive_setup(){
-  Servo ESC;
-  int PWM1_pin = 9;         // Use D9 PWM pin
-  int min_PW = 1000;        // minimum pulse width 2ms [units in us]
-  int max_PW = 2000;        // max pulse width
-  ESC.attach(PWM1_pin, min_PW, max_PW); // 
+// DEFINE CONSTANTS TO BE USED IN GLOBAL SPACE
+Servo ESC;
+int PWM1_pin = 9;         // Use D9 PWM pin
+int min_PW = 1000;        // minimum pulse width 2ms [units in us]
+int max_PW = 2000;        // max pulse width
+
+void initMotor() {
+  ESC.attach(PWM1_pin, min_PW, max_PW);  // Attach the ESC to the specified pin and pulse widths
 }
+  
 
 // Function to drive motor in specified direction
 void drive(DIRECTION drive_direction){
@@ -29,7 +30,7 @@ void drive(DIRECTION drive_direction){
       break;
     default:
       speed = 511;
-      break
+      break;
   // END OF CASE STRUCTURE
   } 
 
@@ -38,3 +39,5 @@ void drive(DIRECTION drive_direction){
   // drive motor / Send PWM to ESC (write pin 9)
   ESC.write(speed);
 }
+
+

@@ -1,17 +1,36 @@
 // AutoCurtainMain.ino
-#include "state_transition.h"
+// #include "state_transition.h" // state_transition currently unfinished
 #include "motor_drive.h"
-
+#include <Servo.h>
 
 void setup() {
   // put your setup code here, to run once:
-  void drive_setup();
+  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  while (){
-    void drive(OPEN); // {STOP, OPEN, CLOSE}
+  // intialize motor_drive source code
+  initMotor();
+
+  // read digital inputs from remote transmitter
+  int up = digitalRead(10);
+  int down = digitalRead(11);
+  int set = digitalRead(12);
+
+  // define variable for drive direction as enum type used in motor_drive.cpp function
+  DIRECTION direction;
+
+  // assign drive direction according to remote inputs
+  if(up){
+    direction = OPEN;
   }
-  void drive(STOP);
+  else if(down){
+    direction = CLOSE;
+  }
+  else{
+    direction = STOP;
+  }
+
+  drive(direction);
 }
