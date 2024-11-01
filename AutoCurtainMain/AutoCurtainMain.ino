@@ -6,8 +6,6 @@
 void setup() {
   // put your setup code here, to run once:
   void drive_setup();
-
-  void myfunc(int 2);
 }
 
 void loop() {
