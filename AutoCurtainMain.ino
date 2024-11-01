@@ -13,7 +13,7 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   while (){
-    void drive(DIRECTION STOP); // {STOP, OPEN, CLOSE}
+    void drive(DIRECTION OPEN); // {STOP, OPEN, CLOSE}
   }
   void drive(STOP);
 }
