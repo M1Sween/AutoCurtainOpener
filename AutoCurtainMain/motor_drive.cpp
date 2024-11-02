@@ -2,13 +2,14 @@
 
 #include "motor_drive.h"
 
-// DEFINE CONSTANTS TO BE USED IN GLOBAL SPACE
-Servo ESC;
-int PWM1_pin = 9;         // Use D9 PWM pin
-int min_PW = 1000;        // minimum pulse width 2ms [units in us]
-int max_PW = 2000;        // max pulse width
+// DEFINE SERVO OBJECT TO BE USED IN GLOBAL SPACE
+Servo ESC;                  // initialize instance of Servo class
 
+// INITIALIZATION FOR PWN OUTPUT TO ESC
 void initMotor() {
+  int PWM1_pin = 9;         // Use D9 PWM pin
+  int min_PW = 1000;        // minimum pulse width 2ms [units in us]
+  int max_PW = 2000;        // max pulse width
   ESC.attach(PWM1_pin, min_PW, max_PW);  // Attach the ESC to the specified pin and pulse widths
 }
   
