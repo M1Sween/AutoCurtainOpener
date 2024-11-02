@@ -3,15 +3,16 @@
 #include "motor_drive.h"
 #include <Servo.h>
 
+// NOTE: setup is run once automatically when the arduino is pwrd on or code deployed; no need to call it anywhere
 void setup() {
   // put your setup code here, to run once:
-  
+  // intialize motor_drive source code
+  initMotor();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // intialize motor_drive source code
-  initMotor();
+  
 
   // read digital inputs from remote transmitter
   int up = digitalRead(10);
@@ -21,7 +22,7 @@ void loop() {
   // define variable for drive direction as enum type used in motor_drive.cpp function
   DIRECTION direction;
 
-  // assign drive direction according to remote inputs
+  // assign drive direction according to remote button inputs
   if(up){
     direction = OPEN;
   }
