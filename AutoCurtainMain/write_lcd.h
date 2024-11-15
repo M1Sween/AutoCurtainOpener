@@ -4,10 +4,12 @@
 
 // include libraries to be used in source code
 #include <Arduino.h>
-#include <Wire.h>
+//#include <Wire.h>
 #include <LiquidCrystal.h> // LCD library (for non-I2C connection)
 
+extern LiquidCrystal lcd;
+
 void initLCD(void);
-void writeLCD(const String& line1, const String& line2);
+void writeLCD(const String& line_1, const String& line_2);
 
 #endif
