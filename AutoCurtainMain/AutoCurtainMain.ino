@@ -10,6 +10,7 @@ void setup() {
   //Serial.begin(9600);
   // intialize motor_drive source code
   initMotor();
+  initLCD();
 }
 
 String line1;
@@ -26,14 +27,14 @@ void menu(){
   line1 = "Set open/close <";    // 0 case
   line2 = "Set time        ";    // 1 case
   writeLCD(line1, line2);
-  
+
 
   while(set != 1){
     // read digital inputs from remote transmitter
     up = digitalRead(10);
     down = digitalRead(11);
     set = digitalRead(12);
-    delay(500);
+
     if(up||down){                 // if either cursor button is pressed
       switch(menu_cursor){
         case 0:                   // if top line currently selected
@@ -52,6 +53,7 @@ void menu(){
         break;    
       }
       writeLCD(line1, line2);
+
     } 
   }
   if(set){
@@ -74,8 +76,8 @@ void submenu0(){
   int down;
   int set = 0;
   // initialize menue text 
-  line1 = "Set open time   <";    // 0 case
-  line2 = "Set close time   ";    // 1 case
+  line1 = "Set open time  <";    // 0 case
+  line2 = "Set close time  ";    // 1 case
   writeLCD(line1, line2);
   
 
@@ -84,25 +86,26 @@ void submenu0(){
     up = digitalRead(10);
     down = digitalRead(11);
     set = digitalRead(12);
-    delay(500);
+    //delay(500);
     if(up||down){                 // if either cursor button is pressed
       switch(menu_cursor){
         case 0:                   // if top line currently selected
           if(down){               // if down arrow is pressed
             menu_cursor = 1;      // move cursor to bottom line
-            line1 = "Set open time    ";    // 0 case
-            line2 = "Set close time  <";   // 1 case
+            line1 = "Set open time   ";    // 0 case
+            line2 = "Set close time <";   // 1 case
           }
           break;
         case 1:                   // if bottom line currently selected
           if(up){                 // if up button pressed 
             menu_cursor = 0;      // move cursor to top line
-            line1 = "Set open time   <";    // 0 case
-            line2 = "Set close time   ";   // 1 case
+            line1 = "Set open time  <";    // 0 case
+            line2 = "Set close time  ";   // 1 case
           }
         break;    
       }
       writeLCD(line1, line2);
+
     } 
   }
   if(set){
@@ -155,5 +158,6 @@ void loop() {
   delay(200);
   drive(direction);
   writeLCD(line1, line2);
+
   
 }

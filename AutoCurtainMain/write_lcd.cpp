@@ -1,7 +1,7 @@
 #include "write_lcd.h"
 
 // Initialize the LCD (RS, E, D4, D5, D6, D7 pins)
-LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
+Adafruit_LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
 
 void initLCD(){
   // Initialize the LCD (16 columns and 2 rows)
