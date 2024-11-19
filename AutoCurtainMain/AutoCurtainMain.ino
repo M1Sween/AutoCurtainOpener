@@ -2,28 +2,60 @@
 // #include "state_transition.h" // state_transition currently unfinished
 #include "motor_drive.h"
 #include "write_lcd.h"
+#include "timeClass.h"
 #include <Servo.h>
+#include <Wire.h>
+#include <RTClib.h>        // RTC DS3231 library
+
+// initialize globals
+String line1;
+String line2;
+
+Time open_time("Set Open:");
+Time close_time("Set Close:");
+Time clock_time("Set Clock:");
+RTC_DS3231 rtc;
 
 // NOTE: setup is run once automatically when the arduino is pwrd on or code deployed; no need to call it anywhere
 void setup() {
   // put your setup code here, to run once:
-  //Serial.begin(9600);
-  // intialize motor_drive source code
+  Serial.begin(9600);
+  // intialize motor_drive and write_lcd source code
   initMotor();
   initLCD();
+  // initialize RTC
+  // Initialize the RTC
+  if (!rtc.begin()) {
+    Serial.println("Couldn't find RTC");
+    while (1); // Halt execution if the RTC is not detected
+  }
+  // write computer time to RTC
+  rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); 
+  // rtc.adjust(DateTime(2024, 11, 19, 14, 30, 0)); // YYYY, MM, DD, HH, MM, SS
+
+  //Get current date and time from the RTC
+  DateTime now = rtc.now();
+  int hour;
+  int period;
+  if(now.hour()>=12) {        // adjust for PM scale
+    hour = now.hour()-12;   
+    period = 1;               // PM
+  }
+  else {
+    hour = now.hour();
+    period = 0;
+  }
 }
 
-String line1;
-String line2;
 
 void menu(){
   delay(500);
-  // initialize menue variable
+  // initialize menu variable
   int menu_cursor = 0;
   int up;
   int down;
   int set = 0;
-  // initialize menue text
+  // initialize menu text
   line1 = "Set open/close <";    // 0 case
   line2 = "Set time        ";    // 1 case
   writeLCD(line1, line2);
@@ -59,15 +91,16 @@ void menu(){
   if(set){
       switch(menu_cursor){
         case 0:
-          submenu0();
+          submenu0();             // Change open/close schedule menu
           break;
         case 1:
-          //submenu1();
+          //submenu1();           // Change clock time LCD menu
           break;
       }
     }
 }
 
+// Change open/close schedule menu
 void submenu0(){
   delay(500);
   // initialize menue variables
@@ -111,53 +144,83 @@ void submenu0(){
   if(set){
       switch(menu_cursor){
         case 0:
-          //submenu0_0();
+          open_time.changeTimeMenu();           // launch menu to set new open time
           break;
         case 1:
-          //submenu0_1();
+          close_time.changeTimeMenu();          // launch menu to set new close time
           break;
       }
     }
 }
 
+// Change clock time LCD menu
+void submenu1() {                 
+  // Get RTC current date and time
+  DateTime now = rtc.now();
+
+  // Update clock_time object (for menu LCD display initialization)
+  clock_time.setTime(now);
+
+  // Launch LCD menu to change clock_time, store new DateTime
+  DateTime new_RTC_time = clock_time.changeTimeMenu();
+
+  // Write new clock time to RTC
+  rtc.adjust(new_RTC_time); 
+}
+
 void loop() {
   // put your main code here, to run repeatedly:
-  //String line1;
-  //String line2;
+
+  // define variable for drive direction as enum type used in motor_drive.cpp function
+  DIRECTION direction;
 
   // read digital inputs from remote transmitter
   int up = digitalRead(10);
   int down = digitalRead(11);
   int set = digitalRead(12);
 
+  // update clock_time
+  clock_time.setTime(rtc.now());
+
+  // check if clock time is at open or close time; open/close accordingly
+  if(clock_time.getHour() == open_time.getHour() && clock_time.getMinute() == open_time.getMinute()) {
+    drive(OPEN);
+    delay(500);
+    drive(STOP);
+  }
+  else if(clock_time.getHour() == close_time.getHour() && clock_time.getMinute() == close_time.getMinute()) {
+    drive(CLOSE);
+    delay(500);
+    drive(STOP);
+  }
+
+  // if no inputs received, display the time 
+  if(!(up && down && set)) {
+    writeLCD(clock_time.formatTimeDisplay(),"");
+  }
+  else {
+    // launch programming menu if set button is pressed
+    if(set) {
+      menu();       
+    }
+
+    // assign drive direction according to remote button inputs
+    if(up){
+      direction = OPEN;
+      line1 = "Opening...";
+      line2 = "";
+    }
+    else if(down){
+      direction = CLOSE;
+      line1 = "Closing...";
+      line2 = "";
+    }
+    writeLCD(line1, line2);
+    drive(direction);
+    delay(100);
+    drive(STOP);
+  }
   
-  if(set){
-    menu();
-  }
-
-  // define variable for drive direction as enum type used in motor_drive.cpp function
-  DIRECTION direction;
-
-  // assign drive direction according to remote button inputs
-  if(up){
-    direction = OPEN;
-    line1 = "Opening...";
-    line2 = "line 2";
-  }
-  else if(down){
-    direction = CLOSE;
-    line1 = "Closing...";
-    line2 = "line 2";
-  }
-  else{
-    direction = STOP;
-    line1 = "Idle";
-    line2 = "line 2";
-  }
-
-  delay(200);
-  drive(direction);
-  writeLCD(line1, line2);
 
   
 }

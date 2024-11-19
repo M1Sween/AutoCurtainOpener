@@ -4,7 +4,7 @@
 // DEFINE SERVO OBJECT TO BE USED IN GLOBAL SPACE
 Servo ESC;                  // initialize instance of Servo class
 
-// INITIALIZATION FOR PWN OUTPUT TO ESC
+// INITIALIZATION FOR PWM OUTPUT TO ESC
 void initMotor() {
   int PWM1_pin = 9;         // Use D9 PWM pin
   int min_PW = 1000;        // minimum pulse width 2ms [units in us]
