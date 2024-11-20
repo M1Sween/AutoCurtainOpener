@@ -26,6 +26,7 @@ class Time {
     void setTime(DateTime now);                                                         // method to change time attributes via program
     int getHour();                                                                      // returns 24hr scale _hour
     int getMinute();                                                                    // returns _min
+    int getSecond();                                                                    // returns _sec
 };
 
 #endif

@@ -35,17 +35,18 @@ String Time::formatPeriod(int value) {
 String Time::formatTimeDisplay() {
   String time_str = formatTime(_hour) + ":" +    // XX:XX AM or XX:XX PM
                     formatTime(_min) + " "  +
-                    formatPeriod(_period);
+                    formatPeriod(_period) + "        ";
   return time_str;
 }
 
 // Change time menu
 DateTime Time::changeTimeMenu() {
-  delay(100);     // include delay so one set button press is not double counted
-  // initialize menu variables
-  int up, down, set = 0;
   // initialize menu text
   writeLCD(_line1, formatTimeDisplay());
+  delay(250);     // include delay so one set button press is not double counted
+
+  // initialize menu variables
+  int up, down, set = 0;
 
   // changing hour
   while(set != 1){ 
@@ -71,10 +72,11 @@ DateTime Time::changeTimeMenu() {
         _hour--;            // decrement hour
       } 
       writeLCD(_line1, formatTimeDisplay()); // update display
-     }
+    }
+    delay(100);
   }
 
-  delay(100);     // include delay so one set button press is not double counted
+  delay(250);     // include delay so one set button press is not double counted
   up, down, set = 0;
 
   // changing minute
@@ -101,10 +103,11 @@ DateTime Time::changeTimeMenu() {
         _min--;            // decrement min
       } 
       writeLCD(_line1, formatTimeDisplay()); // update display
-     }
+    }
+    delay(100);
   }  
 
-  delay(100);     // include delay so one set button press is not double counted
+  delay(250);     // include delay so one set button press is not double counted
   up, down, set = 0;
 
   while(set != 1){ // changing period
@@ -117,6 +120,7 @@ DateTime Time::changeTimeMenu() {
       _period = abs(_period - 1);
       writeLCD(_line1, formatTimeDisplay()); // update display
     }
+    delay(100);
   }
 
   // return new time in DateTime format (convert 12 hour scale to 24 hour scale)
@@ -127,6 +131,9 @@ DateTime Time::changeTimeMenu() {
   else {
     DateTime_hour = _hour + _period*12;
   }
+
+  delay(250);     // include delay so one set button press is not double counted
+
   _sec = 0;
   // rtc.adjust(DateTime(2024, 11, 19, 14, 30, 0)); // YYYY, MM, DD, HH, MM, SS
   return DateTime(2024, 11, 19, DateTime_hour, _min, _sec);    // Set second to 00 because menu does not allow sec to be changed
@@ -164,6 +171,10 @@ int Time::getMinute() {
   return _min;
 }
 
+// Return second
+int Time::getSecond() {
+  return _sec;
+}
 
 
 

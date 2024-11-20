@@ -9,7 +9,7 @@ void initLCD(){
 }
 
 void writeLCD(const String& line_1, const String& line_2){
-  lcd.clear();                    // Clear the LCD screen
+  //lcd.clear();                    // Clear the LCD screen
   lcd.setCursor(0, 0);            // Set cursor to the top line
   lcd.print(line_1);       // Print the first line
   // delay(100);

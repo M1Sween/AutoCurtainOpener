@@ -22,11 +22,11 @@ void drive(DIRECTION drive_direction){
     case STOP:          //  stop motor drive
       speed = 511;
       break;
-    case OPEN:           // drive motor in CCW direction at half speed
-      speed = 255;
+    case OPEN:           // drive motor in CCW direction at quarter speed
+      speed = 383;
       break;
-    case CLOSE:          // drive motor in CW direction at half speed
-      speed = 767;
+    case CLOSE:          // drive motor in CW direction at quarter speed
+      speed = 639;
       break;
     default:
       speed = 511;

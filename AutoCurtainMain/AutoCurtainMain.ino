@@ -11,9 +11,9 @@
 String line1;
 String line2;
 
-Time open_time("Set Open:");
-Time close_time("Set Close:");
-Time clock_time("Set Clock:");
+Time open_time("Set Open:       ");
+Time close_time("Set Close:      ");
+Time clock_time("Set Clock:      ");
 RTC_DS3231 rtc;
 
 // NOTE: setup is run once automatically when the arduino is pwrd on or code deployed; no need to call it anywhere
@@ -27,24 +27,13 @@ void setup() {
   // Initialize the RTC
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC");
+    lcd.setCursor(0, 0);
+    lcd.print("RTC NOT FOUND");
     while (1); // Halt execution if the RTC is not detected
   }
   // write computer time to RTC
   rtc.adjust(DateTime(F(__DATE__), F(__TIME__))); 
-  // rtc.adjust(DateTime(2024, 11, 19, 14, 30, 0)); // YYYY, MM, DD, HH, MM, SS
-
-  //Get current date and time from the RTC
-  DateTime now = rtc.now();
-  int hour;
-  int period;
-  if(now.hour()>=12) {        // adjust for PM scale
-    hour = now.hour()-12;   
-    period = 1;               // PM
-  }
-  else {
-    hour = now.hour();
-    period = 0;
-  }
+  // rtc.adjust(DateTime(2024, 11, 19, 14, 30, 0)); // YYYY, MM, DD, HH, MM, SS 
 }
 
 
@@ -94,7 +83,7 @@ void menu(){
           submenu0();             // Change open/close schedule menu
           break;
         case 1:
-          //submenu1();           // Change clock time LCD menu
+          submenu1();           // Change clock time LCD menu
           break;
       }
     }
@@ -183,20 +172,20 @@ void loop() {
   clock_time.setTime(rtc.now());
 
   // check if clock time is at open or close time; open/close accordingly
-  if(clock_time.getHour() == open_time.getHour() && clock_time.getMinute() == open_time.getMinute()) {
+  if(clock_time.getHour() == open_time.getHour() && clock_time.getMinute() == open_time.getMinute() && clock_time.getSecond() < 1) {
     drive(OPEN);
-    delay(500);
+    delay(2000);
     drive(STOP);
   }
-  else if(clock_time.getHour() == close_time.getHour() && clock_time.getMinute() == close_time.getMinute()) {
+  else if(clock_time.getHour() == close_time.getHour() && clock_time.getMinute() == close_time.getMinute() && clock_time.getSecond() < 1) {
     drive(CLOSE);
-    delay(500);
+    delay(2000);
     drive(STOP);
   }
 
   // if no inputs received, display the time 
-  if(!(up && down && set)) {
-    writeLCD(clock_time.formatTimeDisplay(),"");
+  if(up == 0 && down == 0 && set == 0) {
+    writeLCD(clock_time.formatTimeDisplay(),"                ");
   }
   else {
     // launch programming menu if set button is pressed
@@ -205,22 +194,26 @@ void loop() {
     }
 
     // assign drive direction according to remote button inputs
-    if(up){
-      direction = OPEN;
-      line1 = "Opening...";
-      line2 = "";
+    while(up || down){  
+      // read digital inputs from remote transmitter
+      up = digitalRead(10);
+      down = digitalRead(11);
+      if(up){
+        direction = OPEN;
+        line1 = "Opening...      ";
+        line2 = "                ";
+      }
+      else if(down){
+        direction = CLOSE;
+        line1 = "Closing...      ";
+        line2 = "                ";
+      }
+      writeLCD(line1, line2);
+      drive(direction);
     }
-    else if(down){
-      direction = CLOSE;
-      line1 = "Closing...";
-      line2 = "";
-    }
-    writeLCD(line1, line2);
-    drive(direction);
-    delay(100);
     drive(STOP);
   }
-  
+  delay(100);
 
   
 }
