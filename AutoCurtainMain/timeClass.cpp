@@ -76,8 +76,8 @@ DateTime Time::changeTimeMenu() {
     delay(100);
   }
 
-  delay(250);     // include delay so one set button press is not double counted
-  up, down, set = 0;
+  delay(250);               // include delay so one set button press is not double counted
+  up, down, set = 0;        // reset inputs
 
   // changing minute
   while(set != 1){ 
@@ -86,31 +86,32 @@ DateTime Time::changeTimeMenu() {
     down = digitalRead(11);
     set = digitalRead(12);
 
-    if(up) {                 // if up button is pressed
+    if(up) {                  // if up button is pressed
       if(_min == 59) {
-        _min = 0;           // increment min to XX:00
+        _min = 0;             // increment min to XX:00
       }
       else {
-        _min++;             // increment min 
+        _min++;               // increment min 
       }
       writeLCD(_line1, formatTimeDisplay()); // update display
     }
-    else if(down) {         // if down button is pressed
+    else if(down) {           // if down button is pressed
       if(_min == 0) {
-        _min = 59;         // decrement min to XX:59
+        _min = 59;            // decrement min to XX:59
         }
       else {
-        _min--;            // decrement min
+        _min--;               // decrement min
       } 
       writeLCD(_line1, formatTimeDisplay()); // update display
     }
     delay(100);
   }  
 
-  delay(250);     // include delay so one set button press is not double counted
-  up, down, set = 0;
+  delay(250);                 // include delay so one set button press is not double counted
+  up, down, set = 0;          // reset inputs
 
-  while(set != 1){ // changing period
+  // changing period
+  while(set != 1){ 
     // read digital inputs from remote transmitter
     up = digitalRead(10);
     down = digitalRead(11);
@@ -134,20 +135,21 @@ DateTime Time::changeTimeMenu() {
 
   delay(250);     // include delay so one set button press is not double counted
 
-  _sec = 0;
-  // rtc.adjust(DateTime(2024, 11, 19, 14, 30, 0)); // YYYY, MM, DD, HH, MM, SS
-  return DateTime(2024, 11, 19, DateTime_hour, _min, _sec);    // Set second to 00 because menu does not allow sec to be changed
+  _sec = 0;       // Set second to 00 because menu does not allow sec to be changed
+
+  // format: DateTime(2024, 11, 19, 14, 30, 0); // YYYY, MM, DD, HH, MM, SS
+  return DateTime(2024, 11, 19, DateTime_hour, _min, _sec);    
 }
 
 // Set time attributes from DateTime
 void Time::setTime(DateTime now) {
   if (now.hour() >= 12) {        // Adjust for PM scale
     _hour = now.hour() - 12;
-    _period = 1;               // PM
+    _period = 1;                 // PM
   } 
   else {
     _hour = now.hour();
-    _period = 0;               // AM
+    _period = 0;                 // AM
   }
 
   _min = now.minute();

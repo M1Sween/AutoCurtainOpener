@@ -5,16 +5,16 @@
 #include "timeClass.h"
 #include <Servo.h>
 #include <Wire.h>
-#include <RTClib.h>        // RTC DS3231 library
+#include <RTClib.h>                     // RTC DS3231 library
 
 // initialize globals
-String line1;
+String line1;                           // Arduino has its own class for string, std::string does not work
 String line2;
 
 Time open_time("Set Open:       ");
 Time close_time("Set Close:      ");
 Time clock_time("Set Clock:      ");
-RTC_DS3231 rtc;
+RTC_DS3231 rtc;                         // (A4 -> SDA, A5 -> SCL)
 
 // NOTE: setup is run once automatically when the arduino is pwrd on or code deployed; no need to call it anywhere
 void setup() {
@@ -24,7 +24,6 @@ void setup() {
   initMotor();
   initLCD();
   // initialize RTC
-  // Initialize the RTC
   if (!rtc.begin()) {
     Serial.println("Couldn't find RTC");
     lcd.setCursor(0, 0);
@@ -38,17 +37,16 @@ void setup() {
 
 
 void menu(){
-  delay(500);
-  // initialize menu variable
-  int menu_cursor = 0;
-  int up;
-  int down;
-  int set = 0;
   // initialize menu text
-  line1 = "Set open/close <";    // 0 case
-  line2 = "Set time        ";    // 1 case
+  line1 = "Set open/close <";     // 0 case
+  line2 = "Set time        ";     // 1 case
   writeLCD(line1, line2);
 
+  delay(250);                     // avoid double counting set button
+
+  // initialize menu variables
+  int menu_cursor = 0;
+  int up, down, set = 0;
 
   while(set != 1){
     // read digital inputs from remote transmitter
@@ -74,8 +72,8 @@ void menu(){
         break;    
       }
       writeLCD(line1, line2);
-
-    } 
+    }
+  delay(100); 
   }
   if(set){
       switch(menu_cursor){
@@ -83,7 +81,7 @@ void menu(){
           submenu0();             // Change open/close schedule menu
           break;
         case 1:
-          submenu1();           // Change clock time LCD menu
+          submenu1();             // Change clock time LCD menu
           break;
       }
     }
@@ -91,44 +89,42 @@ void menu(){
 
 // Change open/close schedule menu
 void submenu0(){
-  delay(500);
-  // initialize menue variables
-  int menu_cursor = 0;
-  int up;
-  int down;
-  int set = 0;
-  // initialize menue text 
-  line1 = "Set open time  <";    // 0 case
-  line2 = "Set close time  ";    // 1 case
+  // initialize menu text
+  line1 = "Set open/close <";     // 0 case
+  line2 = "Set time        ";     // 1 case
   writeLCD(line1, line2);
-  
+
+  delay(250);                     // avoid double counting set button
+
+  // initialize menu variables
+  int menu_cursor = 0;
+  int up, down, set = 0;
 
   while(set != 1){
     // read digital inputs from remote transmitter
     up = digitalRead(10);
     down = digitalRead(11);
     set = digitalRead(12);
-    //delay(500);
     if(up||down){                 // if either cursor button is pressed
       switch(menu_cursor){
         case 0:                   // if top line currently selected
           if(down){               // if down arrow is pressed
             menu_cursor = 1;      // move cursor to bottom line
-            line1 = "Set open time   ";    // 0 case
-            line2 = "Set close time <";   // 1 case
+            line1 = "Set open time   ";     // 0 case
+            line2 = "Set close time <";     // 1 case
           }
           break;
         case 1:                   // if bottom line currently selected
           if(up){                 // if up button pressed 
             menu_cursor = 0;      // move cursor to top line
-            line1 = "Set open time  <";    // 0 case
-            line2 = "Set close time  ";   // 1 case
+            line1 = "Set open time  <";     // 0 case
+            line2 = "Set close time  ";     // 1 case
           }
         break;    
       }
       writeLCD(line1, line2);
-
-    } 
+    }
+  delay(100);   
   }
   if(set){
       switch(menu_cursor){
@@ -147,10 +143,10 @@ void submenu1() {
   // Get RTC current date and time
   DateTime now = rtc.now();
 
-  // Update clock_time object (for menu LCD display initialization)
+  // Update clock_time object to display when menu is launched
   clock_time.setTime(now);
 
-  // Launch LCD menu to change clock_time, store new DateTime
+  // Launch LCD menu to change clock_time, store new DateTime created in menu
   DateTime new_RTC_time = clock_time.changeTimeMenu();
 
   // Write new clock time to RTC
@@ -171,7 +167,7 @@ void loop() {
   // update clock_time
   clock_time.setTime(rtc.now());
 
-  // check if clock time is at open or close time; open/close accordingly
+  // check if clock time is at open or close time; open/close accordingly (limit switches to be added)
   if(clock_time.getHour() == open_time.getHour() && clock_time.getMinute() == open_time.getMinute() && clock_time.getSecond() < 1) {
     drive(OPEN);
     delay(2000);
@@ -193,8 +189,8 @@ void loop() {
       menu();       
     }
 
-    // assign drive direction according to remote button inputs
-    while(up || down){  
+    // open/close curtains if up/down button is pressed (limit switches to be added)
+    while(up || down) {  
       // read digital inputs from remote transmitter
       up = digitalRead(10);
       down = digitalRead(11);
@@ -213,7 +209,6 @@ void loop() {
     }
     drive(STOP);
   }
-  delay(100);
 
-  
+  delay(100);
 }

@@ -19,13 +19,13 @@ void drive(DIRECTION drive_direction){
 
   // set analog value to turn into PWN according to input cmd
   switch (drive_direction) {
-    case STOP:          //  stop motor drive
+    case STOP:            //  stop motor drive
       speed = 511;
       break;
-    case OPEN:           // drive motor in CCW direction at quarter speed
+    case OPEN:            // drive motor in CCW direction at quarter speed
       speed = 383;
       break;
-    case CLOSE:          // drive motor in CW direction at quarter speed
+    case CLOSE:           // drive motor in CW direction at quarter speed
       speed = 639;
       break;
     default:
@@ -36,7 +36,7 @@ void drive(DIRECTION drive_direction){
 
   // change duty cycle scale
   speed = map(speed, 0, 1023, 0, 180);
-  // drive motor / Send PWM to ESC (write pin 9)
+  // drive motor / send PWM to ESC (write to pin 9)
   ESC.write(speed);
 }
 

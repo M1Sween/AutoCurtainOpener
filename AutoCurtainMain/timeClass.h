@@ -14,7 +14,7 @@ class Time {
     int _hour;
     int _min;
     int _sec;
-    int _period;                          // AM / PM; AM = 0, PM = 1
+    int _period;                           // AM / PM; AM = 0, PM = 1
     String _line1;                         // String displayed on line 1 of LCD during changeTimeMenu() method
 
   public:
